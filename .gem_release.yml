@@ -1,0 +1,3 @@
+bump:
+  file: lib/active_record/slotted_counters/version.rb
+  skip_ci: true
