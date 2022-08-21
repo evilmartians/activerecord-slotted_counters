@@ -30,5 +30,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "bundler", ">= 1.15"
   s.add_development_dependency "rake", ">= 13.0"
   s.add_development_dependency "rspec", ">= 3.9"
+  s.add_development_dependency "pg", ">= 1.4"
+  s.add_development_dependency "database_cleaner", ">= 2.0"
   s.add_development_dependency "sqlite3"
 end

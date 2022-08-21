@@ -42,3 +42,4 @@ tmp/
 
 gemfiles/*.lock
 vendor/
+.byebug_history

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 begin
-  require "debug"
+  require "pry-byebug"
 rescue LoadError
 end
 ENV["RAILS_ENV"] = "test"
 
-require "activerecord-slotted_counters"
+require File.expand_path("dummy/config/environment", __dir__)
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].sort.each { |f| require f }
 

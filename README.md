@@ -69,7 +69,15 @@ User.all.with_slotted_counters(:comments).find_each do
 end
 ```
 
-Using `counter_cache: true` on `belongs_to` associations also wors as expected.
+Using `counter_cache: true` on `belongs_to` associations also works as expected.
+
+## Limitations / TODO
+### TODO
+- [] add reset_counters implementation
+- [] add update_counters implementation
+- [] add with_slotted_counters implementation
+- [] add multiple has_slotted_counter support
+- [] setup CI
 
 ## Contributing
 
