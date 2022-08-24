@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples "test ActiveRecord::CounterCache interface" do |article_class, comment_class|
+RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, comment_class|
   let(:article_class) { article_class }
   let(:comment_class) { comment_class }
 
