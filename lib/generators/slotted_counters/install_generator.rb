@@ -1,4 +1,6 @@
-require 'rails/generators'
+# frozen_string_literal: true
+
+require "rails/generators"
 require "rails/generators/active_record"
 
 module SlottedCounters
