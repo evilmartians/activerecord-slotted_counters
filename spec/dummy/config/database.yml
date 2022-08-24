@@ -1,5 +1,6 @@
 test:
   adapter: postgresql
+  database: slotted_counters
   encoding: unicode
   host: localhost
   username: postgres
