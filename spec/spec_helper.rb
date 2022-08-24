@@ -6,7 +6,11 @@ rescue LoadError
 end
 ENV["RAILS_ENV"] = "test"
 
-require File.expand_path("dummy/config/environment", __dir__)
+require 'active_record'
+require "activerecord-slotted_counters"
+
+# TODO is it ok?
+ActiveRecord::Base.include ActiveRecordSlottedCounters::HasSlottedCounter
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].sort.each { |f| require f }
 
@@ -19,4 +23,12 @@ RSpec.configure do |config|
 
   config.order = :random
   Kernel.srand config.seed
+
+  config.before(:each, db: true) do
+    ActiveRecord::Base.connection.begin_transaction(joinable: false)
+  end
+
+  config.append_after(:each, db: true) do |ex|
+    ActiveRecord::Base.connection.rollback_transaction
+  end
 end

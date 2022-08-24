@@ -2,14 +2,7 @@
 
 require_relative "spec_helper"
 
-require "database_cleaner"
-DatabaseCleaner.strategy = :deletion
-
-RSpec.describe "ActiveRecord::SlottedCounterCache" do
-  before(:each) do
-    DatabaseCleaner.clean
-  end
-
+RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
   it_behaves_like "ActiveRecord::CounterCache interface", WithSlottedCounter::Article, WithSlottedCounter::Comment
   it_behaves_like "ActiveRecord::CounterCache interface", WithNativeCounter::Article, WithNativeCounter::Comment
 
@@ -35,13 +28,15 @@ RSpec.describe "ActiveRecord::SlottedCounterCache" do
     end
   end
 
-  it "should call native counter methods" do
-    article = WithSlottedCounter::Article.create!
+  describe "using both counter types simultaneously" do
+    it "should use native counter increment method" do
+      article = WithSlottedCounter::Article.create!
 
-    WithSlottedCounter::Article.increment_counter(:likes_count, article.id)
-    # TODO read from with_slotted_counter_articles.likes_count column directly
-    article.reload
+      WithSlottedCounter::Article.increment_counter(:likes_count, article.id)
+      # TODO read from with_slotted_counter_articles.likes_count column directly
+      article.reload
 
-    expect(article.likes_count).to eq(1)
+      expect(article.likes_count).to eq(1)
+    end
   end
 end
