@@ -34,4 +34,14 @@ RSpec.describe "ActiveRecord::SlottedCounterCache" do
       expect(article.comments_count).to eq(-more_than_max_slotted_count)
     end
   end
+
+  it "should call native counter methods" do
+    article = WithSlottedCounter::Article.create!
+
+    WithSlottedCounter::Article.increment_counter(:likes_count, article.id)
+    # TODO read from with_slotted_counter_articles.likes_count column directly
+    article.reload
+
+    expect(article.likes_count).to eq(1)
+  end
 end
