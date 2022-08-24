@@ -6,3 +6,5 @@ gem "rails", "~> 7.0"
 gem "pg", "~> 1.0"
 
 gem "activerecord-slotted_counters", path: "../../.."
+
+gem "byebug", "~> 11.1"

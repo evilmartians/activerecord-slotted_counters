@@ -1,8 +1,0 @@
-development:
-  adapter: postgresql
-  database: slotted_counters_bench
-  encoding: unicode
-  host: localhost
-  username: postgres
-  port: 9339
-  pool: 80

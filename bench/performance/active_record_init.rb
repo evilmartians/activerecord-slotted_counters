@@ -6,6 +6,7 @@ ActiveRecord::Base.establish_connection(adapter: "postgresql",
   database: "slotted_counters",
   host: "localhost",
   port: 9339,
+  pool: 80,
   username: "postgres")
 
 ActiveRecord::Schema.define do
