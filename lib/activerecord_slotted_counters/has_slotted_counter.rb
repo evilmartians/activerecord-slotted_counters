@@ -39,13 +39,13 @@ module ActiveRecordSlottedCounters
       end
 
       def increment_counter(counter_name, id, touch: nil)
-        return super unless registered? counter_name
+        return super unless registered_slotted_counter? counter_name
 
         insert_counter_record(counter_name, id, 1)
       end
 
       def decrement_counter(counter_name, id, touch: nil)
-        return super unless registered? counter_name
+        return super unless registered_slotted_counter? counter_name
 
         insert_counter_record(counter_name, id, -1)
       end
@@ -64,7 +64,7 @@ module ActiveRecordSlottedCounters
         @_slotted_counters ||= []
       end
 
-      def registered?(counter_name)
+      def registered_slotted_counter?(counter_name)
         counter_type = slotted_counter_type(counter_name)
 
         slotted_counters.include? counter_type
