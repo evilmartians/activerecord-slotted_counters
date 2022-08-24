@@ -31,7 +31,7 @@ module ActiveRecordSlottedCounters
 
         has_many association_name, **SLOTTED_COUNTERS_ASSOCIATION_OPTIONS
 
-        slotted_counter_types << counter_type
+        _slotted_counters << counter_type
 
         define_method(counter_name) do
           read_slotted_counter(counter_type)
@@ -50,20 +50,24 @@ module ActiveRecordSlottedCounters
         insert_counter_record(counter_name, id, -1)
       end
 
+      def slotted_counters
+        if superclass.respond_to?(:slotted_counters)
+          superclass.slotted_counters + _slotted_counters
+        else
+          _slotted_counters
+        end
+      end
+
       private
 
-      def slotted_counter_types
-        unless instance_variable_defined?(:@slotted_counter_types)
-          instance_variable_set(:@slotted_counter_types, Set.new)
-        end
-
-        instance_variable_get(:@slotted_counter_types)
+      def _slotted_counters
+        @_slotted_counters ||= []
       end
 
       def registered?(counter_name)
         counter_type = slotted_counter_type(counter_name)
 
-        slotted_counter_types.include? counter_type
+        slotted_counters.include? counter_type
       end
 
       def insert_counter_record(counter_name, id, count)

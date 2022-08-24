@@ -14,8 +14,9 @@ module ActiveRecordSlottedCounters
       "#{counter_type}_count".to_sym
     end
 
+    # TODO refactoring
     def slotted_counter_type(counter_name)
-      counter_name.to_s.split("_")[0].to_sym
+      counter_name.to_s.split("_")[0..-2].join("_").to_sym
     end
   end
 end

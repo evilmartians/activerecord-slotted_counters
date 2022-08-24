@@ -29,14 +29,31 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
   end
 
   describe "using both counter types simultaneously" do
-    it "should use native counter increment method" do
+    it "should use native counter" do
       article = WithSlottedCounter::Article.create!
 
       WithSlottedCounter::Article.increment_counter(:likes_count, article.id)
-      # TODO read from with_slotted_counter_articles.likes_count column directly
-      article.reload
+      likes_count = WithSlottedCounter::Article.where(id: article.id).pluck(:likes_count).first
 
-      expect(article.likes_count).to eq(1)
+      expect(likes_count).to eq(1)
+    end
+  end
+
+  describe "using slotted counter in child model" do
+    it "should use parent slotted counter" do
+      article = WithSlottedCounter::SpecificArticle.create!
+
+      WithSlottedCounter::SpecificArticle.increment_counter(:comments_count, article.id)
+
+      expect(article.comments_count).to eq(1)
+    end
+
+    it "should use specific slotted counter" do
+      article = WithSlottedCounter::SpecificArticle.create!
+
+      WithSlottedCounter::SpecificArticle.increment_counter(:specific_comments_count, article.id)
+
+      expect(article.specific_comments_count).to eq(1)
     end
   end
 end
