@@ -27,36 +27,11 @@ ActiveRecord::Schema.define do
     t.datetime "updated_at", null: false
   end
 
-  create_table "with_native_counter_comments", force: :cascade do |t|
-    t.bigint "with_native_counter_article_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["with_native_counter_article_id"], name: "native_counter_article_id"
-  end
-
   create_table "with_slotted_counter_articles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "likes_count", default: 0
   end
-
-  create_table "with_slotted_counter_comments", force: :cascade do |t|
-    t.bigint "with_slotted_counter_article_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["with_slotted_counter_article_id"], name: "slotted_counter_comments_article_id"
-  end
-
-  create_table "with_slotted_counter_likes", force: :cascade do |t|
-    t.bigint "with_slotted_counter_article_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["with_slotted_counter_article_id"], name: "slotted_counter_likes_article_id"
-  end
-
-  add_foreign_key "with_native_counter_comments", "with_native_counter_articles"
-  add_foreign_key "with_slotted_counter_comments", "with_slotted_counter_articles"
-  add_foreign_key "with_slotted_counter_likes", "with_slotted_counter_articles"
 end
 
 ActiveRecord::Base.logger = Logger.new($stdout) if ENV["LOG"]
