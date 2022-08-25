@@ -20,7 +20,7 @@ module ActiveRecordSlottedCounters
     SLOTTED_COUNTERS_ASSOCIATION_OPTIONS = {
       class_name: "ActiveRecordSlottedCounters::SlottedCounter",
       foreign_key: "associated_record_id"
-    }.freeze
+    }
 
     class_methods do
       include ActiveRecordSlottedCounters::Utils
