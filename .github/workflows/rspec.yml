@@ -13,6 +13,7 @@ jobs:
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432
       CI: true
     strategy:
       fail-fast: false
@@ -26,12 +27,30 @@ jobs:
           gemfile: "gemfiles/railsmaster.gemfile"
         - ruby: "3.0"
           gemfile: "gemfiles/rails7.gemfile"
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres }}
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
     - uses: actions/checkout@v3
+    - name: Install system deps
+      run: |
+        sudo apt-get update
+        sudo apt-get -yqq install libpq-dev
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
+    - name: Create DB
+      run: |
+        env PGPASSWORD=postgres createdb -h localhost -U postgres slotted_counters_test
     - name: Run RSpec
       run: |
-        bundle exec rspec
+        bundle exec rspec -f d --force-color

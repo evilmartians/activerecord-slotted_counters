@@ -1,12 +1,22 @@
 # frozen_string_literal: true
 
-# TODO pass params by env vars
-ActiveRecord::Base.establish_connection(adapter: "postgresql",
-  encoding: "unicode",
-  database: "slotted_counters",
-  host: "localhost",
-  port: 9339,
-  username: "postgres")
+connection_params =
+  if ENV.key?("DATABASE_URL")
+    {"url" => ENV["DATABASE_URL"]}
+  else
+    {
+      "host" => ENV.fetch("DB_HOST", "localhost"),
+      "username" => ENV.fetch("DB_USER", "postgres"),
+      "port" => ENV.fetch("DB_PORT", "9339").to_i
+    }
+  end
+
+ActiveRecord::Base.establish_connection(
+  {
+    "adapter" => "postgresql",
+    "database" => "slotted_counters_test"
+  }.merge(connection_params)
+)
 
 ActiveRecord::Schema.define do
   create_table "slotted_counters", force: :cascade do |t|
