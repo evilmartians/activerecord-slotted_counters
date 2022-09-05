@@ -1,5 +1,4 @@
-[![Gem Version](https://badge.fury.io/rb/activerecord-slotted_counters.svg)](https://rubygems.org/gems/activerecord-slotted_counters) [![Build](https://github.com/palkan/activerecord-slotted_counters/workflows/Build/badge.svg)](https://github.com/palkan/activerecord-slotted_counters/actions)
-[![JRuby Build](https://github.com/palkan/activerecord-slotted_counters/workflows/JRuby%20Build/badge.svg)](https://github.com/palkan/activerecord-slotted_counters/actions)
+[![Gem Version](https://badge.fury.io/rb/activerecord-slotted_counters.svg)](https://rubygems.org/gems/activerecord-slotted_counters) [![Build](https://github.com/evilmartians/activerecord-slotted_counters/workflows/Build/badge.svg)](https://github.com/evilmartians/activerecord-slotted_counters/actions)
 
 # Active Record slotted counters
 
@@ -72,16 +71,16 @@ end
 Using `counter_cache: true` on `belongs_to` associations also works as expected.
 
 ## Limitations / TODO
-### TODO
-- [] add reset_counters implementation
-- [] add update_counters implementation
-- [] add with_slotted_counters implementation
-- [] add multiple has_slotted_counter support
-- [] setup CI
+
+- Add `reset_counters` implementation
+- Add `update_counters` implementation
+- Add `with_slotted_counters` scope
+- Add multiple `has_slotted_counter` support
+- Rails 6 support
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at [https://github.com/palkan/activerecord-slotted_counters](https://github.com/palkan/activerecord-slotted_counters).
+Bug reports and pull requests are welcome on GitHub at [https://github.com/evilmartians/activerecord-slotted_counters](https://github.com/evilmartians/activerecord-slotted_counters).
 
 ## Credis
 
