@@ -74,6 +74,7 @@ Using `counter_cache: true` on `belongs_to` associations also works as expected.
 
 - Add `reset_counters` implementation
 - Add `update_counters` implementation
+- Support `touch: *` option
 - Add `with_slotted_counters` scope
 - Add multiple `has_slotted_counter` support
 - Rails 6 support
