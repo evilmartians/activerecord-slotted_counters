@@ -39,15 +39,33 @@ module ActiveRecordSlottedCounters
       end
 
       def increment_counter(counter_name, id, touch: nil)
-        return super unless registered_slotted_counter? counter_name
-
-        insert_counter_record(counter_name, id, 1)
+        update_counters(id, counter_name => 1, :touch => touch)
       end
 
       def decrement_counter(counter_name, id, touch: nil)
-        return super unless registered_slotted_counter? counter_name
+        update_counters(id, counter_name => -1, :touch => touch)
+      end
 
-        insert_counter_record(counter_name, id, -1)
+      def update_counters(id, counters)
+        touch = counters.delete(:touch)
+
+        updated_counters_count = 0
+        registered_counters, unregistered_counters = counters.partition { |name, _| registered_slotted_counter? name }.map(&:to_h)
+
+        if unregistered_counters.present?
+          unregistered_counters.merge(touch: touch)
+          updated_unregistered_counters_count = super(id, unregistered_counters)
+          updated_counters_count += updated_unregistered_counters_count
+        end
+
+        # TODO implement touch logic
+        if registered_counters.present?
+          ids = id.instance_of?(Integer) ? [id] : id
+          updated_registered_counters_count = insert_counters_records(ids, registered_counters)
+          updated_counters_count += updated_registered_counters_count
+        end
+
+        updated_counters_count
       end
 
       def slotted_counters
@@ -70,23 +88,34 @@ module ActiveRecordSlottedCounters
         slotted_counters.include? counter_type
       end
 
-      def insert_counter_record(counter_name, id, count)
-        slot = rand(DEFAULT_MAX_SLOT_NUMBER)
-        on_duplicate_clause = "count = slotted_counters.count + #{count}"
+      def insert_counters_records(ids, counters)
+        counters_params = prepare_slotted_counters_params(ids, counters)
+        on_duplicate_clause = "count = slotted_counters.count + excluded.count"
 
-        result = ActiveRecordSlottedCounters::SlottedCounter.upsert(
-          {
-            counter_name: counter_name,
-            associated_record_type: name,
-            associated_record_id: id,
-            slot: slot,
-            count: count
-          },
+        result = ActiveRecordSlottedCounters::SlottedCounter.upsert_all(
+          counters_params,
           on_duplicate: Arel.sql(on_duplicate_clause),
           unique_by: :index_slotted_counters
         )
 
         result.rows.count
+      end
+
+      def prepare_slotted_counters_params(ids, counters)
+        counters.map do |counter_name, count|
+          slot = rand(DEFAULT_MAX_SLOT_NUMBER)
+
+          ids.map do |id|
+            {
+
+              counter_name: counter_name,
+              associated_record_type: name,
+              associated_record_id: id,
+              slot: slot,
+              count: count
+            }
+          end
+        end.flatten
       end
     end
 

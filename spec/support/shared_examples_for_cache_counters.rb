@@ -26,4 +26,22 @@ RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, 
     article.comments.create!
     expect(article.comments_count).to eq(1)
   end
+
+  describe "update_counters interface" do
+    it "updates counter by passing id as integer" do
+      article = article_class.create!
+      updated_rows_count = article_class.update_counters(article.id, comments_count: 1)
+      article.reload
+      expect(article.comments_count).to eq(1)
+      expect(updated_rows_count).to eq(1)
+    end
+
+    it "updates counter by passing id as array" do
+      article = article_class.create!
+      updated_rows_count = article_class.update_counters([article.id], comments_count: 1)
+      article.reload
+      expect(article.comments_count).to eq(1)
+      expect(updated_rows_count).to eq(1)
+    end
+  end
 end
