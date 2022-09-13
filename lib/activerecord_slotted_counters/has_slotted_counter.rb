@@ -38,14 +38,6 @@ module ActiveRecordSlottedCounters
         end
       end
 
-      def increment_counter(counter_name, id, touch: nil)
-        update_counters(id, counter_name => 1, :touch => touch)
-      end
-
-      def decrement_counter(counter_name, id, touch: nil)
-        update_counters(id, counter_name => -1, :touch => touch)
-      end
-
       def update_counters(id, counters)
         touch = counters.delete(:touch)
 
