@@ -45,7 +45,7 @@ module ActiveRecordSlottedCounters
         registered_counters, unregistered_counters = counters.partition { |name, _| registered_slotted_counter? name }.map(&:to_h)
 
         if unregistered_counters.present?
-          unregistered_counters.merge(touch: touch)
+          unregistered_counters.merge!(touch: touch)
           updated_unregistered_counters_count = super(id, unregistered_counters)
           updated_counters_count += updated_unregistered_counters_count
         end

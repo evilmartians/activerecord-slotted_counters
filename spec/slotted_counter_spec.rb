@@ -50,6 +50,28 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
       expect(article.likes_count).to eq(likes_count)
       expect(article.comments_count).to eq(comments_count)
     end
+
+    # TODO move to shared_examples after adding touch support for slotted counter
+    it "must not update 'updated_at' without 'touch' option" do
+      article = WithSlottedCounter::Article.create!
+      previous_updated_at = article.updated_at
+
+      WithSlottedCounter::Article.update_counters(article.id, likes_count: 1)
+
+      article.reload
+      expect(article.updated_at).to eq(previous_updated_at)
+    end
+
+    # TODO move to shared_examples after adding touch support for slotted counter
+    it "must update 'updated_at' with 'touch' option" do
+      article = WithSlottedCounter::Article.create!
+      previous_updated_at = article.updated_at
+
+      WithSlottedCounter::Article.update_counters(article.id, likes_count: 1, touch: true)
+
+      article.reload
+      expect(article.updated_at).not_to eq(previous_updated_at)
+    end
   end
 
   describe "using slotted counter in child model" do
@@ -70,6 +92,7 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
     end
   end
 
+  # TODO move to shared_examples after adding `counter_cache: true` support for slotted counter
   describe "native Rails counter" do
     it "changes counter after creating and destroying comments" do
       article = WithNativeCounter::Article.create!
