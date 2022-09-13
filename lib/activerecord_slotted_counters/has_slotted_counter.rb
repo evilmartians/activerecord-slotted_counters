@@ -52,7 +52,7 @@ module ActiveRecordSlottedCounters
 
         # TODO implement touch logic
         if registered_counters.present?
-          ids = id.instance_of?(Integer) ? [id] : id
+          ids = Array(id)
           updated_registered_counters_count = insert_counters_records(ids, registered_counters)
           updated_counters_count += updated_registered_counters_count
         end
