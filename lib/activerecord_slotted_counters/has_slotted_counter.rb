@@ -50,10 +50,9 @@ module ActiveRecordSlottedCounters
           updated_counters_count += updated_unregistered_counters_count
         end
 
-        # TODO implement touch logic
         if registered_counters.present?
           ids = Array(id)
-          updated_registered_counters_count = insert_counters_records(ids, registered_counters)
+          updated_registered_counters_count = update_slotted_counters(ids, registered_counters, touch)
           updated_counters_count += updated_registered_counters_count
         end
 
@@ -80,6 +79,16 @@ module ActiveRecordSlottedCounters
         slotted_counters.include? counter_type
       end
 
+      def update_slotted_counters(ids, registered_counters, touch)
+        updated_counters_count = 0
+        ActiveRecord::Base.transaction do
+          updated_counters_count = insert_counters_records(ids, registered_counters)
+          touch_attributes(ids, touch) if touch.present?
+        end
+
+        updated_counters_count
+      end
+
       def insert_counters_records(ids, counters)
         counters_params = prepare_slotted_counters_params(ids, counters)
         on_duplicate_clause = "count = slotted_counters.count + excluded.count"
@@ -91,6 +100,13 @@ module ActiveRecordSlottedCounters
         )
 
         result.rows.count
+      end
+
+      def touch_attributes(ids, touch)
+        scope = where(id: ids)
+        return scope.touch_all if touch == true
+
+        scope.touch_all(touch)
       end
 
       def prepare_slotted_counters_params(ids, counters)

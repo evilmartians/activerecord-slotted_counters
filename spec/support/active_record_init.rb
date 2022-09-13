@@ -34,6 +34,7 @@ ActiveRecord::Schema.define do
     t.integer "comments_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "specific_updated_at"
   end
 
   create_table "with_native_counter_comments", force: :cascade do |t|
@@ -46,6 +47,7 @@ ActiveRecord::Schema.define do
   create_table "with_slotted_counter_articles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "specific_updated_at"
     t.integer "likes_count", default: 0
   end
 
