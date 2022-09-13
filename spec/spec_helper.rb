@@ -9,7 +9,6 @@ ENV["RAILS_ENV"] = "test"
 require "active_record"
 require "activerecord-slotted_counters"
 
-# TODO is it ok?
 ActiveRecord::Base.include ActiveRecordSlottedCounters::HasSlottedCounter
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].sort.each { |f| require f }

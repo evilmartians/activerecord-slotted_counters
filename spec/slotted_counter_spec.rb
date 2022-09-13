@@ -69,4 +69,16 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
       expect(article.specific_comments_count).to eq(1)
     end
   end
+
+  describe "native Rails counter" do
+    it "changes counter after creating and destroying comments" do
+      article = WithNativeCounter::Article.create!
+      article.comments.create!
+      expect(article.comments_count).to eq(1)
+
+      article.comments.first.destroy
+      article.reload
+      expect(article.comments_count).to eq(0)
+    end
+  end
 end
