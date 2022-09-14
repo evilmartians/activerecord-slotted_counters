@@ -36,6 +36,11 @@ module ActiveRecordSlottedCounters
         define_method(counter_name) do
           read_slotted_counter(counter_type)
         end
+
+        counter_type_association = reflect_on_all_associations(:has_many).detect { |assoc| assoc.name == counter_type }
+        return if counter_type_association.blank?
+
+        add_callbacks(counter_type, counter_name, counter_type_association.options)
       end
 
       def update_counters(id, counters)
@@ -115,7 +120,6 @@ module ActiveRecordSlottedCounters
 
           ids.map do |id|
             {
-
               counter_name: counter_name,
               associated_record_type: name,
               associated_record_id: id,

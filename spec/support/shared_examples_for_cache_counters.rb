@@ -74,4 +74,15 @@ RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, 
       expect(article.specific_updated_at).not_to eq(previous_specific_updated_at)
     end
   end
+
+  it "changes counter after creating and destroying comments" do
+    article = article_class.create!
+    article.comments.create!
+    expect(article.comments_count).to eq(1)
+
+    article.comments.destroy_all
+
+    article.reload
+    expect(article.comments_count).to eq(0)
+  end
 end
