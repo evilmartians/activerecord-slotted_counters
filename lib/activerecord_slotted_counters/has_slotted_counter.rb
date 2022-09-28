@@ -10,11 +10,19 @@ module ActiveRecordSlottedCounters
     end
   end
 
+  module BelongsToAssociation
+    def update_counters_via_scope(klass, foreign_key, by)
+      counter_name = reflection.counter_cache_column
+      super unless klass.registered_slotted_counter? counter_name
+
+      klass.update_counters(foreign_key, counter_name => by, touch: reflection.options[:touch])
+    end
+  end
+
   module HasSlottedCounter
     extend ActiveSupport::Concern
     include ActiveRecordSlottedCounters::Utils
 
-    # TODO setup in gem config
     DEFAULT_MAX_SLOT_NUMBER = 100
 
     SLOTTED_COUNTERS_ASSOCIATION_OPTIONS = {
@@ -36,11 +44,6 @@ module ActiveRecordSlottedCounters
         define_method(counter_name) do
           read_slotted_counter(counter_type)
         end
-
-        counter_type_association = reflect_on_all_associations(:has_many).detect { |assoc| assoc.name == counter_type }
-        return if counter_type_association.blank?
-
-        add_callbacks(counter_type, counter_name, counter_type_association.options)
       end
 
       def update_counters(id, counters)
@@ -72,12 +75,6 @@ module ActiveRecordSlottedCounters
         end
       end
 
-      private
-
-      def _slotted_counters
-        @_slotted_counters ||= []
-      end
-
       def registered_slotted_counter?(counter_name)
         counter_type = slotted_counter_type(counter_name)
 
@@ -92,6 +89,12 @@ module ActiveRecordSlottedCounters
         end
 
         updated_counters_count
+      end
+
+      private
+
+      def _slotted_counters
+        @_slotted_counters ||= []
       end
 
       def insert_counters_records(ids, counters)
