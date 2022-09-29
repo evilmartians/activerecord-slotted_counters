@@ -36,15 +36,6 @@ class User < ApplicationRecord
 end
 ```
 
-If you define has_many association for the slotted counter model you must do it before `has_slotted_counter`:
-
-```ruby
-class User < ApplicationRecord
-  has_many :comments
-  has_slotted_counter :comments
-end
-```
-
 Now you can use all the common counter cache APIs as before:
 
 ```ruby
@@ -76,8 +67,6 @@ User.all.with_slotted_counters(:comments).find_each do
   _1.comments_count #=> no sql
 end
 ```
-
-You shouldn't need to add `counter_cache: true` on `belongs_to` associations because the gem updates the slotted counter anyway if you defined the `has_many` association.
 
 ## Limitations / TODO
 

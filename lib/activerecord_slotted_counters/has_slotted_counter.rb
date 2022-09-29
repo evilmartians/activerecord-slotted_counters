@@ -23,6 +23,7 @@ module ActiveRecordSlottedCounters
     extend ActiveSupport::Concern
     include ActiveRecordSlottedCounters::Utils
 
+    # TODO setup in gem config
     DEFAULT_MAX_SLOT_NUMBER = 100
 
     SLOTTED_COUNTERS_ASSOCIATION_OPTIONS = {
