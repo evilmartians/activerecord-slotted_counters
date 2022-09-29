@@ -81,4 +81,21 @@ RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, 
     article.reload
     expect(article.comments_count).to eq(0)
   end
+
+  describe "polimorphic associations" do
+    it "changes counter after creating and destroying views" do
+      article = article_class.create!
+
+      article.views.create!
+      expect(article.views_count).to eq(1)
+
+      View.create!(viewable: article)
+      expect(article.views_count).to eq(2)
+
+      article.views.destroy_all
+
+      article.reload
+      expect(article.views_count).to eq(0)
+    end
+  end
 end

@@ -15,7 +15,7 @@ module ActiveRecordSlottedCounters
       counter_name = reflection.counter_cache_column
       super unless klass.registered_slotted_counter? counter_name
 
-      klass.update_counters(foreign_key, counter_name => by, touch: reflection.options[:touch])
+      klass.update_counters(foreign_key, counter_name => by, :touch => reflection.options[:touch])
     end
   end
 
@@ -137,7 +137,7 @@ module ActiveRecordSlottedCounters
     def increment!(attribute, by = 1, touch: nil)
       super unless self.class.registered_slotted_counter? attribute
 
-      self.class.update_counters(self.id, attribute => by, touch: touch)
+      self.class.update_counters(id, attribute => by, :touch => touch)
     end
 
     private

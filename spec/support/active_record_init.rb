@@ -19,6 +19,13 @@ ActiveRecord::Base.establish_connection(
 )
 
 ActiveRecord::Schema.define do
+  create_table "views", force: :cascade do |t|
+    t.string "viewable_type", null: false
+    t.integer "viewable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "slotted_counters", force: :cascade do |t|
     t.string "counter_name", null: false
     t.string "associated_record_type", null: false
@@ -32,6 +39,7 @@ ActiveRecord::Schema.define do
 
   create_table "with_native_counter_articles", force: :cascade do |t|
     t.integer "comments_count", default: 0
+    t.integer "views_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "specific_updated_at"
