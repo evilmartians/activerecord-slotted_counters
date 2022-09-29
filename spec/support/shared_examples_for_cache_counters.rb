@@ -20,13 +20,6 @@ RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, 
     expect(updated_rows_count).to eq(1)
   end
 
-  it "increments counter after adding a new comment" do
-    skip "TODO waits belongs_to support"
-    article = article_class.create!
-    article.comments.create!
-    expect(article.comments_count).to eq(1)
-  end
-
   describe "update_counters interface" do
     it "updates counter by passing id as integer" do
       article = article_class.create!
@@ -79,6 +72,9 @@ RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, 
     article = article_class.create!
     article.comments.create!
     expect(article.comments_count).to eq(1)
+
+    comment_class.create!(article: article)
+    expect(article.comments_count).to eq(2)
 
     article.comments.destroy_all
 

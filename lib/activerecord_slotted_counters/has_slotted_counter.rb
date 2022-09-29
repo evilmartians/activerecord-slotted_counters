@@ -134,6 +134,12 @@ module ActiveRecordSlottedCounters
       end
     end
 
+    def increment!(attribute, by = 1, touch: nil)
+      super unless self.class.registered_slotted_counter? attribute
+
+      self.class.update_counters(self.id, attribute => by, touch: touch)
+    end
+
     private
 
     def read_slotted_counter(counter_type)
