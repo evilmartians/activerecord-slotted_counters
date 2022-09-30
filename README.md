@@ -72,7 +72,6 @@ Using `counter_cache: true` on `belongs_to` associations also works as expected.
 
 ## Limitations / TODO
 
-- Add `reset_counters` implementation
 - Rails 6 support
 
 ## Contributing
