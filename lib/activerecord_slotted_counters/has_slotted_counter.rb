@@ -10,6 +10,15 @@ module ActiveRecordSlottedCounters
     end
   end
 
+  module BelongsToAssociation
+    def update_counters_via_scope(klass, foreign_key, by)
+      counter_name = reflection.counter_cache_column
+      super unless klass.registered_slotted_counter? counter_name
+
+      klass.update_counters(foreign_key, counter_name => by, :touch => reflection.options[:touch])
+    end
+  end
+
   module HasSlottedCounter
     extend ActiveSupport::Concern
     include ActiveRecordSlottedCounters::Utils
@@ -67,12 +76,6 @@ module ActiveRecordSlottedCounters
         end
       end
 
-      private
-
-      def _slotted_counters
-        @_slotted_counters ||= []
-      end
-
       def registered_slotted_counter?(counter_name)
         counter_type = slotted_counter_type(counter_name)
 
@@ -87,6 +90,12 @@ module ActiveRecordSlottedCounters
         end
 
         updated_counters_count
+      end
+
+      private
+
+      def _slotted_counters
+        @_slotted_counters ||= []
       end
 
       def insert_counters_records(ids, counters)
@@ -115,7 +124,6 @@ module ActiveRecordSlottedCounters
 
           ids.map do |id|
             {
-
               counter_name: counter_name,
               associated_record_type: name,
               associated_record_id: id,
@@ -125,6 +133,12 @@ module ActiveRecordSlottedCounters
           end
         end.flatten
       end
+    end
+
+    def increment!(attribute, by = 1, touch: nil)
+      super unless self.class.registered_slotted_counter? attribute
+
+      self.class.update_counters(id, attribute => by, :touch => touch)
     end
 
     private

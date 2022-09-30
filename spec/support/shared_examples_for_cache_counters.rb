@@ -20,13 +20,6 @@ RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, 
     expect(updated_rows_count).to eq(1)
   end
 
-  it "increments counter after adding a new comment" do
-    skip "TODO waits belongs_to support"
-    article = article_class.create!
-    article.comments.create!
-    expect(article.comments_count).to eq(1)
-  end
-
   describe "update_counters interface" do
     it "updates counter by passing id as integer" do
       article = article_class.create!
@@ -72,6 +65,37 @@ RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, 
 
       article.reload
       expect(article.specific_updated_at).not_to eq(previous_specific_updated_at)
+    end
+  end
+
+  it "changes counter after creating and destroying comments" do
+    article = article_class.create!
+    article.comments.create!
+    expect(article.comments_count).to eq(1)
+
+    comment_class.create!(article: article)
+    expect(article.comments_count).to eq(2)
+
+    article.comments.destroy_all
+
+    article.reload
+    expect(article.comments_count).to eq(0)
+  end
+
+  describe "polimorphic associations" do
+    it "changes counter after creating and destroying views" do
+      article = article_class.create!
+
+      article.views.create!
+      expect(article.views_count).to eq(1)
+
+      View.create!(viewable: article)
+      expect(article.views_count).to eq(2)
+
+      article.views.destroy_all
+
+      article.reload
+      expect(article.views_count).to eq(0)
     end
   end
 end
