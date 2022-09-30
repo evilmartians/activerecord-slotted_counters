@@ -81,4 +81,17 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
     expect(article.comments_count).to eq(comments_count)
     expect(article.views_count).to eq(views_count)
   end
+
+  it "must preload slotted counters" do
+    article = WithSlottedCounter::Article.create!
+    WithSlottedCounter::Article.increment_counter(:comments_count, article.id)
+
+    WithSlottedCounter::Article.all.find_each do |article|
+      expect(article.comments_slotted_counters.loaded?).to be_falsy
+    end
+
+    WithSlottedCounter::Article.all.with_slotted_counters(:comments).find_each do |article|
+      expect(article.comments_slotted_counters.loaded?).to be_truthy
+    end
+  end
 end
