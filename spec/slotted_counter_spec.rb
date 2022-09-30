@@ -69,4 +69,16 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
       expect(article.specific_comments_count).to eq(1)
     end
   end
+
+  it "must update multiple counters in model" do
+    article = WithSlottedCounter::Article.create!
+
+    comments_count = rand(10)
+    views_count = rand(10)
+
+    WithSlottedCounter::Article.update_counters(article.id, comments_count: comments_count, views_count: views_count)
+
+    expect(article.comments_count).to eq(comments_count)
+    expect(article.views_count).to eq(views_count)
+  end
 end
