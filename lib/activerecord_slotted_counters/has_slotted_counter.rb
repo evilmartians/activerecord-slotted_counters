@@ -122,9 +122,10 @@ module ActiveRecordSlottedCounters
           raise ArgumentError, "'#{name}' has no association called '#{counter_association}'" unless has_many_association
 
           counter_name = slotted_counter_name counter_association
-          updates = {counter_name => object.send(counter_association).count(:all)}
 
           ActiveRecord::Base.transaction do
+            counter_value = object.send(counter_association).count(:all)
+            updates = {counter_name => counter_value}
             remove_counters_records(id, counter_name)
             insert_counters_records(ids, updates)
             touch_attributes(ids, touch) if touch.present?
