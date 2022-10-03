@@ -126,9 +126,9 @@ module ActiveRecordSlottedCounters
           ActiveRecord::Base.transaction do
             counter_value = object.send(counter_association).count(:all)
             updates = {counter_name => counter_value}
-            remove_counters_records(id, counter_name)
-            insert_counters_records(ids, updates)
-            touch_attributes(ids, touch) if touch.present?
+            remove_counters_records([id], counter_name)
+            insert_counters_records([id], updates)
+            touch_attributes([id], touch) if touch.present?
           end
         end
       end
@@ -146,11 +146,11 @@ module ActiveRecordSlottedCounters
         result.rows.count
       end
 
-      def remove_counters_records(id, counter_name)
+      def remove_counters_records(ids, counter_name)
         ActiveRecordSlottedCounters::SlottedCounter.where(
           counter_name: counter_name,
           associated_record_type: name,
-          associated_record_id: id
+          associated_record_id: ids
         ).destroy_all
       end
 
