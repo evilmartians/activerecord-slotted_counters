@@ -56,11 +56,11 @@ Under the hood, a row in the `slotted_counters` table is created associated with
 **NOTE:** Reading the current value performs SQL query once:
 
 ```ruby
-user.comments_count #=> select count from slotted_counters where ...
+user.comments_count #=> select * from slotted_counters where ...
 user.comments_count #=> no sql
 ```
 
-If you want to want preload counters for multiple records, you can use a convinient `#with_slotted_counters` method:
+If you want to want preload counters for multiple records, you can use a convenient `#with_slotted_counters` method:
 
 ```ruby
 User.all.with_slotted_counters(:comments).find_each do
@@ -73,7 +73,6 @@ Using `counter_cache: true` on `belongs_to` associations also works as expected.
 ## Limitations / TODO
 
 - Add `reset_counters` implementation
-- Add `with_slotted_counters` scope
 - Rails 6 support
 
 ## Contributing

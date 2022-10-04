@@ -38,7 +38,9 @@ module ActiveRecordSlottedCounters
         counter_name = slotted_counter_name(counter_type)
         association_name = slotted_counter_association_name(counter_type)
 
-        has_many association_name, **SLOTTED_COUNTERS_ASSOCIATION_OPTIONS
+        has_many association_name, ->(model) { associated_records(counter_name, model.id, model.class.to_s) }, **SLOTTED_COUNTERS_ASSOCIATION_OPTIONS
+
+        scope :with_slotted_counters, ->(counter_type) { preload(association_name) }
 
         _slotted_counters << counter_type
 
@@ -153,8 +155,7 @@ module ActiveRecordSlottedCounters
         return counter
       end
 
-      counter_name = slotted_counter_name(counter_type)
-      scope = send(association_name).associated_records(counter_name, id, self.class.to_s)
+      scope = send(association_name)
       scope.sum(:count)
     end
   end
