@@ -10,6 +10,7 @@ module ActiveRecordSlottedCounters # :nodoc:
     initializer "extend ActiveRecord with  ActiveRecordSlottedCounters" do |_app|
       ActiveSupport.on_load(:active_record) do
         ActiveRecord::Base.include ActiveRecordSlottedCounters::HasSlottedCounter
+        ActiveRecord::Relation.include ActiveRecordSlottedCounters::Utils
         ActiveRecord::Associations::BelongsToAssociation.prepend ActiveRecordSlottedCounters::BelongsToAssociation
       end
     end

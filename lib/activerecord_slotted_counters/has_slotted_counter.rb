@@ -40,7 +40,10 @@ module ActiveRecordSlottedCounters
 
         has_many association_name, ->(model) { associated_records(counter_name, model.id, model.class.to_s) }, **SLOTTED_COUNTERS_ASSOCIATION_OPTIONS
 
-        scope :with_slotted_counters, ->(counter_type) { preload(association_name) }
+        scope :with_slotted_counters, ->(counter_type) do
+          association_name = slotted_counter_association_name(counter_type)
+          preload(association_name)
+        end
 
         _slotted_counters << counter_type
 
