@@ -70,6 +70,20 @@ module ActiveRecordSlottedCounters
         updated_counters_count
       end
 
+      def reset_counters(id, *counters, touch: nil)
+        registered_counters, unregistered_counters = counters.partition { |name| registered_slotted_counter? slotted_counter_name(name) }
+
+        if unregistered_counters.present?
+          super(id, *unregistered_counters, touch: touch)
+        end
+
+        if registered_counters.present?
+          reset_slotted_counters(id, *registered_counters, touch: touch)
+        end
+
+        true
+      end
+
       def slotted_counters
         if superclass.respond_to?(:slotted_counters)
           superclass.slotted_counters + _slotted_counters
@@ -100,6 +114,25 @@ module ActiveRecordSlottedCounters
         @_slotted_counters ||= []
       end
 
+      def reset_slotted_counters(id, *counters, touch: nil)
+        object = find(id)
+
+        counters.each do |counter_association|
+          has_many_association = _reflect_on_association(counter_association)
+          raise ArgumentError, "'#{name}' has no association called '#{counter_association}'" unless has_many_association
+
+          counter_name = slotted_counter_name counter_association
+
+          ActiveRecord::Base.transaction do
+            counter_value = object.send(counter_association).count(:all)
+            updates = {counter_name => counter_value}
+            remove_counters_records([id], counter_name)
+            insert_counters_records([id], updates)
+            touch_attributes([id], touch) if touch.present?
+          end
+        end
+      end
+
       def insert_counters_records(ids, counters)
         counters_params = prepare_slotted_counters_params(ids, counters)
         on_duplicate_clause = "count = slotted_counters.count + excluded.count"
@@ -111,6 +144,14 @@ module ActiveRecordSlottedCounters
         )
 
         result.rows.count
+      end
+
+      def remove_counters_records(ids, counter_name)
+        ActiveRecordSlottedCounters::SlottedCounter.where(
+          counter_name: counter_name,
+          associated_record_type: name,
+          associated_record_id: ids
+        ).delete_all
       end
 
       def touch_attributes(ids, touch)

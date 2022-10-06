@@ -50,6 +50,27 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
       expect(article.likes_count).to eq(likes_count)
       expect(article.comments_count).to eq(comments_count)
     end
+
+    it "should reset native and slotted counters" do
+      article = WithSlottedCounter::Article.create!
+
+      sql = insert_association_sql(WithSlottedCounter::Like, article.id)
+      ActiveRecord::Base.connection.execute(sql)
+
+      sql = insert_association_sql(WithSlottedCounter::Comment, article.id)
+      ActiveRecord::Base.connection.execute(sql)
+
+      article.reload
+
+      expect(article.likes_count).to eq(0)
+      expect(article.comments_count).to eq(0)
+
+      WithSlottedCounter::Article.reset_counters(article.id, :likes, :comments)
+      article.reload
+
+      expect(article.likes_count).to eq(1)
+      expect(article.comments_count).to eq(1)
+    end
   end
 
   describe "using slotted counter in child model" do
@@ -93,5 +114,18 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
     WithSlottedCounter::Article.all.with_slotted_counters(:comments).find_each do |article|
       expect(article.comments_slotted_counters.loaded?).to be_truthy
     end
+  end
+
+  def insert_association_sql(association_class, article_id)
+    association_table = association_class.arel_table
+    foreign_key = association_class.reflections["article"].foreign_key
+    insert_manager = Arel::InsertManager.new
+    insert_manager.insert([
+      [association_table[foreign_key], article_id],
+      [association_table[:created_at], Arel.sql("now()")],
+      [association_table[:updated_at], Arel.sql("now()")]
+    ])
+
+    insert_manager.to_sql
   end
 end
