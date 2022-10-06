@@ -151,7 +151,7 @@ module ActiveRecordSlottedCounters
           counter_name: counter_name,
           associated_record_type: name,
           associated_record_id: ids
-        ).destroy_all
+        ).delete_all
       end
 
       def touch_attributes(ids, touch)
