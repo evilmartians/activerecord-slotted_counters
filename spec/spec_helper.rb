@@ -10,6 +10,7 @@ require "active_record"
 require "activerecord-slotted_counters"
 
 ActiveRecord::Base.include ActiveRecordSlottedCounters::HasSlottedCounter
+ActiveRecord::Relation.include ActiveRecordSlottedCounters::Utils
 ActiveRecord::Associations::BelongsToAssociation.prepend ActiveRecordSlottedCounters::BelongsToAssociation
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].sort.each { |f| require f }
