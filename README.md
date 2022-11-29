@@ -2,7 +2,7 @@
 
 # Active Record slotted counters
 
-This gem adds **slotted counters** support to [Active Record counter cache][counter-cache]. Slotted counters help to reduce contention on a single row update in case you many concurrent operations (like updating a page views counter during traffic spikes).
+This gem adds **slotted counters** support to [Active Record counter cache][counter-cache]. Slotted counters help to reduce contention on a single row update in case you have many concurrent operations (like updating a page views counter during traffic spikes).
 
 Read more about slotted counters in [this post](https://planetscale.com/blog/the-slotted-counter-pattern).
 
