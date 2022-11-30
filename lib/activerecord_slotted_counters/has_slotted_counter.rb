@@ -2,11 +2,26 @@
 
 require "active_support"
 require "activerecord_slotted_counters/utils"
+require "activerecord_slotted_counters/pg_insert"
 
 module ActiveRecordSlottedCounters
   class SlottedCounter < ::ActiveRecord::Base
+    include ActiveRecordSlottedCounters::PgInsert
+
+    class NotSupportedAdapter < StandardError; end
+
     scope :associated_records, ->(counter_name, id, klass) do
       where(counter_name: counter_name, associated_record_id: id, associated_record_type: klass)
+    end
+
+    # NOTE Rails 6 doesn't support "on_duplicate" option with custom sql
+    def self.upsert_all(attributes, on_duplicate: :update, returning: nil, unique_by: nil, record_timestamps: nil)
+      return super if ActiveRecord::VERSION::MAJOR >= 7
+
+      postgres_adapter_name = ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::ADAPTER_NAME
+      return pg_upsert_all(attributes, on_duplicate: on_duplicate, unique_by: unique_by) if connection.adapter_name == postgres_adapter_name
+
+      raise NotSupportedAdapter, "Gem supports only PostgreSQL"
     end
   end
 
