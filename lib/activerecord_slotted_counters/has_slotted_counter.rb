@@ -13,7 +13,7 @@ module ActiveRecordSlottedCounters
   module BelongsToAssociation
     def update_counters_via_scope(klass, foreign_key, by)
       counter_name = reflection.counter_cache_column
-      super unless klass.registered_slotted_counter? counter_name
+      return super unless klass.registered_slotted_counter? counter_name
 
       klass.update_counters(foreign_key, counter_name => by, :touch => reflection.options[:touch])
     end
@@ -182,7 +182,7 @@ module ActiveRecordSlottedCounters
     end
 
     def increment!(attribute, by = 1, touch: nil)
-      super unless self.class.registered_slotted_counter? attribute
+      return super unless self.class.registered_slotted_counter? attribute
 
       self.class.update_counters(id, attribute => by, :touch => touch)
     end
