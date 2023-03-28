@@ -6,6 +6,7 @@ rescue LoadError
 end
 ENV["RAILS_ENV"] = "test"
 
+require "rspec-sqlimit"
 require "active_record"
 require "activerecord-slotted_counters"
 

@@ -89,12 +89,11 @@ RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, 
       expect(article.views_count).to eq(1)
 
       View.create!(viewable: article)
-      expect(article.views_count).to eq(2)
+      expect(article.reload.views_count).to eq(2)
 
       article.views.destroy_all
 
-      article.reload
-      expect(article.views_count).to eq(0)
+      expect(article.reload.views_count).to eq(0)
     end
   end
 

@@ -5,8 +5,8 @@ require "activerecord_slotted_counters/utils"
 
 module ActiveRecordSlottedCounters
   class SlottedCounter < ::ActiveRecord::Base
-    scope :associated_records, ->(counter_name, id, klass) do
-      where(counter_name: counter_name, associated_record_id: id, associated_record_type: klass)
+    scope :associated_records, ->(counter_name, klass) do
+      where(counter_name: counter_name, associated_record_type: klass)
     end
   end
 
@@ -38,7 +38,7 @@ module ActiveRecordSlottedCounters
         counter_name = slotted_counter_name(counter_type)
         association_name = slotted_counter_association_name(counter_type)
 
-        has_many association_name, ->(model) { associated_records(counter_name, model.id, model.class.to_s) }, **SLOTTED_COUNTERS_ASSOCIATION_OPTIONS
+        has_many association_name, ->(model) { associated_records(counter_name, model.class.to_s) }, **SLOTTED_COUNTERS_ASSOCIATION_OPTIONS
 
         scope :with_slotted_counters, ->(counter_type) do
           association_name = slotted_counter_association_name(counter_type)
@@ -191,16 +191,8 @@ module ActiveRecordSlottedCounters
 
     def read_slotted_counter(counter_type)
       association_name = slotted_counter_association_name(counter_type)
-
-      if association_cached?(association_name)
-        scope = association(association_name).scope
-        counter = scope.sum(&:count)
-
-        return counter
-      end
-
-      scope = send(association_name)
-      scope.sum(:count)
+      scope = association(association_name).load_target
+      scope.sum(&:count)
     end
   end
 end

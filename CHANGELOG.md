@@ -2,6 +2,10 @@
 
 ## master
 
+## 0.1.2 (2023-03-28)
+
+- Fix preloading counters for multiple records [#12](https://github.com/evilmartians/activerecord-slotted_counters/pull/12) ([@LukinEgor][])
+
 ## 0.1.1 (2023-01-17)
 
 - Fix prevent double increment/decrement of native counter caches [#10](https://github.com/evilmartians/activerecord-slotted_counters/pull/10) ([@danielwestendorf][])
