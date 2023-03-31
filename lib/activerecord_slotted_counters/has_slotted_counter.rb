@@ -2,22 +2,57 @@
 
 require "active_support"
 require "activerecord_slotted_counters/utils"
-require "activerecord_slotted_counters/pg_insert"
+
+require "activerecord_slotted_counters/adapters/rails_upsert"
+require "activerecord_slotted_counters/adapters/pg_upsert"
 
 module ActiveRecordSlottedCounters
   class SlottedCounter < ::ActiveRecord::Base
+    class NotSupportedAdapter < StandardError
+      def initialize(adapter)
+        @adapter = adapter
+      end
+
+      def message
+        "The adapter not implemented yet (Rails #{ActiveRecord::VERSION::MAJOR}, #{@adapter})"
+      end
+    end
+
     scope :associated_records, ->(counter_name, klass) do
       where(counter_name: counter_name, associated_record_type: klass)
     end
 
-    # NOTE Rails 6 doesn't support "on_duplicate" option with custom sql
-    def self.upsert_all(attributes, on_duplicate: :update, returning: nil, unique_by: nil, record_timestamps: nil)
-      return super if ActiveRecord::VERSION::MAJOR >= 7
+    class << self
+      def bulk_insert(attributes)
+        on_duplicate_clause = "count = slotted_counters.count + excluded.count"
 
-      postgres_adapter_name = ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::ADAPTER_NAME
-      return pg_upsert_all(attributes, on_duplicate: on_duplicate, unique_by: unique_by) if connection.adapter_name == postgres_adapter_name
+        slotted_counter_db_adapter.bulk_insert(
+          attributes,
+          on_duplicate: Arel.sql(on_duplicate_clause),
+          unique_by: :index_slotted_counters
+        )
+      end
 
-      raise NotSupportedAdapter, "Gem supports only PostgreSQL"
+      private
+
+      def slotted_counter_db_adapter
+        @slotted_counter_association_name ||= set_slotted_counter_db_adapter
+      end
+
+      def set_slotted_counter_db_adapter
+        available_adapters = [
+          ActiveRecordSlottedCounters::Adapters::RailsUpsert,
+          ActiveRecordSlottedCounters::Adapters::PgUpsert
+        ]
+
+        adapter = available_adapters
+          .map { |adapter| adapter.new(self) }
+          .detect { |adapter| adapter.apply? }
+
+        raise NotSupportedAdapter.new(connection.adapter_name) if adapter.nil?
+
+        adapter
+      end
     end
   end
 
@@ -149,13 +184,8 @@ module ActiveRecordSlottedCounters
 
       def insert_counters_records(ids, counters)
         counters_params = prepare_slotted_counters_params(ids, counters)
-        on_duplicate_clause = "count = slotted_counters.count + excluded.count"
 
-        result = ActiveRecordSlottedCounters::SlottedCounter.upsert_all(
-          counters_params,
-          on_duplicate: Arel.sql(on_duplicate_clause),
-          unique_by: :index_slotted_counters
-        )
+        result = ActiveRecordSlottedCounters::SlottedCounter.bulk_insert(counters_params)
 
         result.rows.count
       end
