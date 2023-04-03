@@ -2,6 +2,10 @@
 
 ## master
 
+## 0.1.3 (2023-04-03)
+
+- Add Rails 6 support (PostgreSQL only) [#13](https://github.com/evilmartians/activerecord-slotted_counters/pull/13) ([@LukinEgor][])
+
 ## 0.1.2 (2023-03-28)
 
 - Fix preloading counters for multiple records [#12](https://github.com/evilmartians/activerecord-slotted_counters/pull/12) ([@LukinEgor][])
