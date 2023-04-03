@@ -116,6 +116,15 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
     end
   end
 
+  it "does not generate N+1 queries" do
+    WithSlottedCounter::Article.create!
+    WithSlottedCounter::Article.create!
+
+    expect {
+      WithSlottedCounter::Article.all.with_slotted_counters(:comments).find_each { _1.comments_count }
+    }.not_to exceed_query_limit(2).with(/SELECT/)
+  end
+
   def insert_association_sql(association_class, article_id)
     association_table = association_class.arel_table
     foreign_key = association_class.reflections["article"].foreign_key

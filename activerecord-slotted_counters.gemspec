@@ -32,4 +32,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec", ">= 3.9"
   s.add_development_dependency "pg", ">= 1.4"
   s.add_development_dependency "sqlite3"
+  s.add_development_dependency "rspec-sqlimit"
 end
