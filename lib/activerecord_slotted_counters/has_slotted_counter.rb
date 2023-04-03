@@ -87,8 +87,28 @@ module ActiveRecordSlottedCounters
         has_many association_name, ->(model) { associated_records(counter_name, model.class.to_s) }, **SLOTTED_COUNTERS_ASSOCIATION_OPTIONS
 
         scope :with_slotted_counters, ->(counter_type) do
-          association_name = slotted_counter_association_name(counter_type)
-          preload(association_name)
+          scope_association_name = slotted_counter_association_name(counter_type)
+          return preload(scope_association_name) if ActiveRecord::VERSION::MAJOR >= 7
+
+          scope_counter_name = slotted_counter_name(counter_type)
+          counters = ActiveRecordSlottedCounters::SlottedCounter
+            .where(
+              counter_name: scope_counter_name,
+              associated_record_id: self,
+              associated_record_type: klass.to_s
+            )
+
+          grouped_counters = counters.group_by(&:associated_record_id)
+
+          each do |record|
+            assoc = record.association(scope_association_name)
+            assoc.target = grouped_counters[record.id] || []
+            assoc.loaded!
+          end
+
+          define_singleton_method(:find_each, method(:each))
+
+          self
         end
 
         _slotted_counters << counter_type
