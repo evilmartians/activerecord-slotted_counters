@@ -2,6 +2,10 @@
 
 ## master
 
+## 0.1.4 (2023-04-19)
+
+- Fix "can't modify frozen String" for the pg adapter (ruby 2.7)  [#15](https://github.com/evilmartians/activerecord-slotted_counters/pull/15) ([@LukinEgor][])
+
 ## 0.1.3 (2023-04-03)
 
 - Add Rails 6 support (PostgreSQL only) [#13](https://github.com/evilmartians/activerecord-slotted_counters/pull/13) ([@LukinEgor][])

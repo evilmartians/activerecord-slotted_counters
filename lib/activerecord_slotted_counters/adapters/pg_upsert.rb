@@ -37,14 +37,14 @@ module ActiveRecordSlottedCounters
           columns = columns_for_attributes(index.columns)
           fields = quote_column_names(columns)
 
-          sql << " ON CONFLICT (#{fields})"
+          sql += " ON CONFLICT (#{fields})"
         end
 
         if on_duplicate.present?
-          sql << " DO UPDATE SET #{on_duplicate}"
+          sql += " DO UPDATE SET #{on_duplicate}"
         end
 
-        sql << " RETURNING \"id\""
+        sql += " RETURNING \"id\""
 
         klass.connection.exec_query(sql)
       end
