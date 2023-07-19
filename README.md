@@ -67,7 +67,7 @@ user.comments_count #=> select * from slotted_counters where ...
 user.comments_count #=> no sql
 ```
 
-If you want to want preload counters for multiple records, you can use a convenient `#with_slotted_counters` method:
+If you want to preload counters for multiple records, you can use a convenient `#with_slotted_counters` method:
 
 ```ruby
 User.all.with_slotted_counters(:comments).find_each do
