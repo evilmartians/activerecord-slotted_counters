@@ -2,7 +2,7 @@
 
 module ActiveRecordSlottedCounters
   module Adapters
-    class PgUpsert
+    class PgSqliteUpsert
       attr_reader :klass
 
       def initialize(klass)
@@ -10,7 +10,11 @@ module ActiveRecordSlottedCounters
       end
 
       def apply?
-        ActiveRecord::VERSION::MAJOR < 7 && klass.connection.adapter_name == ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::ADAPTER_NAME
+        return false if ActiveRecord::VERSION::MAJOR >= 7
+
+        adapter_name = klass.connection.adapter_name
+
+        postgresql_connection?(adapter_name) || sqlite_connection?(adapter_name)
       end
 
       def bulk_insert(attributes, on_duplicate: nil, unique_by: nil)
@@ -82,6 +86,18 @@ module ActiveRecordSlottedCounters
 
       def quote_many_records(columns, data)
         data.map { |values| quote_record(columns, values) }.join(",")
+      end
+
+      def postgresql_connection?(adapter_name)
+        return false unless defined?(ActiveRecord::ConnectionAdapters::PostgreSQLAdapter)
+
+        adapter_name == ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::ADAPTER_NAME
+      end
+
+      def sqlite_connection?(adapter_name)
+        return false unless defined?(ActiveRecord::ConnectionAdapters::SQLite3Adapter)
+
+        adapter_name == ActiveRecord::ConnectionAdapters::SQLite3Adapter::ADAPTER_NAME
       end
     end
   end
