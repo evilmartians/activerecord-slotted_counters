@@ -14,6 +14,7 @@ jobs:
       BUNDLE_RETRY: 3
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       POSTGRES_URL: postgres://postgres:postgres@localhost:5432
+      MYSQL_URL: mysql2://rails:rails@127.0.0.1:3306
       DB: ${{ matrix.db }}
       DB_NAME: slotted_counters_test
       CI: true
@@ -22,7 +23,7 @@ jobs:
       matrix:
         ruby: ["3.0"]
         gemfile: ["gemfiles/rails7.gemfile"]
-        db: ["sqlite"]
+        db: ["mysql"]
         include:
         - ruby: "2.7"
           gemfile: "gemfiles/rails6.gemfile"
@@ -35,9 +36,18 @@ jobs:
           db: "postgres"
         - ruby: "2.7"
           gemfile: "gemfiles/rails6.gemfile"
+          db: "mysql"
+        - ruby: "3.1"
+          gemfile: "gemfiles/railsmaster.gemfile"
+          db: "mysql"
+        - ruby: "2.7"
+          gemfile: "gemfiles/rails6.gemfile"
           db: "sqlite"
         - ruby: "3.1"
           gemfile: "gemfiles/railsmaster.gemfile"
+          db: "sqlite"
+        - ruby: "3.0"
+          gemfile: "gemfiles/rails7.gemfile"
           db: "sqlite"
     services:
       postgres:
@@ -47,6 +57,19 @@ jobs:
           POSTGRES_PASSWORD: postgres
         options: >-
           --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mysql:
+        image: mysql:8
+        ports: [ "3306:3306" ]
+        env:
+          MYSQL_PASSWORD: rails
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: slotted_counters_test
+          MYSQL_USER: rails
+        options: >-
+          --health-cmd "mysqladmin ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
