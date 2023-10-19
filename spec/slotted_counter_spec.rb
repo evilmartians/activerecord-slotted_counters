@@ -128,11 +128,18 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
   def insert_association_sql(association_class, article_id)
     association_table = association_class.arel_table
     foreign_key = association_class.reflections["article"].foreign_key
+    current_date_sql_command =
+      if defined?(ActiveRecord::ConnectionAdapters::SQLite3Adapter)
+        "date('now')"
+      else
+        "now()"
+      end
+
     insert_manager = Arel::InsertManager.new
     insert_manager.insert([
       [association_table[foreign_key], article_id],
-      [association_table[:created_at], Arel.sql("now()")],
-      [association_table[:updated_at], Arel.sql("now()")]
+      [association_table[:created_at], Arel.sql(current_date_sql_command)],
+      [association_table[:updated_at], Arel.sql(current_date_sql_command)]
     ])
 
     insert_manager.to_sql

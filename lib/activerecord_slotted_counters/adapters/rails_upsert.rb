@@ -3,7 +3,7 @@
 module ActiveRecordSlottedCounters
   module Adapters
     class RailsUpsert
-      attr_reader :klass
+      attr_reader :klass, :current_adapter_name
 
       def initialize(klass)
         @klass = klass

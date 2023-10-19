@@ -153,11 +153,18 @@ RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, 
   def insert_comment_sql(comment_class, article_id)
     comment_table = comment_class.arel_table
     foreign_key = comment_class.reflections["article"].foreign_key
+    current_date_sql_command =
+      if defined?(ActiveRecord::ConnectionAdapters::SQLite3Adapter)
+        "date('now')"
+      else
+        "now()"
+      end
+
     insert_manager = Arel::InsertManager.new
     insert_manager.insert([
       [comment_table[foreign_key], article_id],
-      [comment_table[:created_at], Arel.sql("now()")],
-      [comment_table[:updated_at], Arel.sql("now()")]
+      [comment_table[:created_at], Arel.sql(current_date_sql_command)],
+      [comment_table[:updated_at], Arel.sql(current_date_sql_command)]
     ])
 
     insert_manager.to_sql
