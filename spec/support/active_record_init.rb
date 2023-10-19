@@ -1,9 +1,16 @@
 # frozen_string_literal: true
 
 DB_CONFIG =
-  if ENV["DB"] == "postgres"
+  if ENV["DB"] == "postgres" || ENV["DB"] == "mysql"
     require "active_record/database_configurations"
-    url = ENV.fetch("POSTGRES_URL")
+    url = ENV.fetch("DATABASE_URL") do
+      case ENV["DB"]
+      when "postgres"
+        ENV.fetch("POSTGRES_URL")
+      when "mysql"
+        ENV.fetch("MYSQL_URL")
+      end
+    end
 
     config = ActiveRecord::DatabaseConfigurations::UrlConfig.new(
       "test",
