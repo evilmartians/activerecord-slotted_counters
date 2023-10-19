@@ -13,20 +13,32 @@ jobs:
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432
+      POSTGRES_URL: postgres://postgres:postgres@localhost:5432
+      DB: ${{ matrix.db }}
+      DB_NAME: slotted_counters_test
       CI: true
     strategy:
       fail-fast: false
       matrix:
         ruby: ["3.0"]
         gemfile: ["gemfiles/rails7.gemfile"]
+        db: ["sqlite"]
         include:
         - ruby: "2.7"
           gemfile: "gemfiles/rails6.gemfile"
+          db: "postgres"
         - ruby: "3.1"
           gemfile: "gemfiles/railsmaster.gemfile"
+          db: "postgres"
         - ruby: "3.0"
           gemfile: "gemfiles/rails7.gemfile"
+          db: "postgres"
+        - ruby: "2.7"
+          gemfile: "gemfiles/rails6.gemfile"
+          db: "sqlite"
+        - ruby: "3.1"
+          gemfile: "gemfiles/railsmaster.gemfile"
+          db: "sqlite"
     services:
       postgres:
         image: postgres:14

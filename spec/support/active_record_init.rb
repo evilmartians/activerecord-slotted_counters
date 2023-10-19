@@ -1,22 +1,27 @@
 # frozen_string_literal: true
 
-connection_params =
-  if ENV.key?("DATABASE_URL")
-    {"url" => ENV["DATABASE_URL"]}
-  else
-    {
-      "host" => ENV.fetch("DB_HOST", "localhost"),
-      "username" => ENV.fetch("DB_USER", "postgres"),
-      "port" => ENV.fetch("DB_PORT", "9339").to_i
-    }
+DB_CONFIG =
+  if ENV["DB"] == "postgres"
+    require "active_record/database_configurations"
+    url = ENV.fetch("POSTGRES_URL")
+
+    config = ActiveRecord::DatabaseConfigurations::UrlConfig.new(
+      "test",
+      "primary",
+      url,
+      {"database" => ENV.fetch("DB_NAME", "slotted_counters_test")}
+    )
+    config.respond_to?(:configuration_hash) ? config.configuration_hash : config.config
+  elsif ENV["DB"] == "sqlite"
+    # Make sure we don't have a DATABASE_URL set (it can be used by libs, e.g., database_cleaner)
+    ENV.delete("DATABASE_URL") if ENV["DATABASE_URL"]
+
+    {adapter: "sqlite3", database: ":memory:"}
   end
 
-ActiveRecord::Base.establish_connection(
-  {
-    "adapter" => "postgresql",
-    "database" => "slotted_counters_test"
-  }.merge(connection_params)
-)
+$stdout.puts "⚙️ Using #{DB_CONFIG[:adapter]} adapter for a database"
+
+ActiveRecord::Base.establish_connection(**DB_CONFIG)
 
 ActiveRecord::Schema.define do
   create_table "views", force: :cascade do |t|
