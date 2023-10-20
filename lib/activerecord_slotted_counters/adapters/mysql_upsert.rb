@@ -2,18 +2,18 @@
 
 module ActiveRecordSlottedCounters
   module Adapters
-    class PgUpsert
-      attr_reader :klass
+    class MysqlUpsert
+      attr_reader :klass, :current_adapter_name
 
-      def initialize(klass)
+      def initialize(klass, current_adapter_name)
         @klass = klass
+        @current_adapter_name = current_adapter_name
       end
 
-      def apply?(current_adapter_name)
-        return false if ActiveRecord::VERSION::MAJOR >= 7
-        return false unless defined?(ActiveRecord::ConnectionAdapters::PostgreSQLAdapter)
+      def apply?
+        return false unless defined?(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
 
-        current_adapter_name == ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::ADAPTER_NAME
+        current_adapter_name == ActiveRecord::ConnectionAdapters::Mysql2Adapter::ADAPTER_NAME
       end
 
       def bulk_insert(attributes, on_duplicate: nil, unique_by: nil)
@@ -35,32 +35,19 @@ module ActiveRecordSlottedCounters
           VALUES #{values_str}
         SQL
 
-        if unique_by.present?
-          index = unique_indexes.find { |i| i.name.to_sym == unique_by }
-          columns = columns_for_attributes(index.columns)
-          fields = quote_column_names(columns)
-
-          sql += " ON CONFLICT (#{fields})"
-        end
-
         if on_duplicate.present?
-          sql += " DO UPDATE SET #{on_duplicate}"
+          sql += " ON DUPLICATE KEY UPDATE #{on_duplicate};"
         end
 
-        sql += " RETURNING \"id\""
-
-        klass.connection.exec_query(sql).rows.count
+        # insert/update and return amount of updated rows
+        klass.connection.update(sql)
       end
 
       def wrap_column_name(value)
-        "EXCLUDED.#{value}"
+        "VALUES(#{value})"
       end
 
       private
-
-      def unique_indexes
-        klass.connection.schema_cache.indexes(klass.table_name).select(&:unique)
-      end
 
       def columns_for_attributes(attributes)
         attributes.map do |attribute|
