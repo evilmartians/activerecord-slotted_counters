@@ -3,10 +3,11 @@
 module ActiveRecordSlottedCounters
   module Adapters
     class RailsUpsert
-      attr_reader :klass
+      attr_reader :klass, :current_adapter_name
 
-      def initialize(klass)
+      def initialize(klass, current_adapter_name)
         @klass = klass
+        @current_adapter_name = current_adapter_name
       end
 
       def apply?(_)
@@ -14,7 +15,11 @@ module ActiveRecordSlottedCounters
       end
 
       def bulk_insert(attributes, on_duplicate: nil, unique_by: nil)
-        klass.upsert_all(attributes, on_duplicate: on_duplicate, unique_by: unique_by)
+        klass.upsert_all(attributes, on_duplicate: on_duplicate, unique_by: unique_by).rows.count
+      end
+
+      def wrap_column_name(value)
+        "EXCLUDED.#{value}"
       end
     end
   end
