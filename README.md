@@ -79,7 +79,7 @@ Using `counter_cache: true` on `belongs_to` associations also works as expected.
 
 ## Limitations / TODO
 
-- Gem supports only PostgreSQL for Rails 6
+- Gem supports only PostgreSQL and SQLite3 for Rails 6
 
 ## Contributing
 
