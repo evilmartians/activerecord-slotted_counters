@@ -38,7 +38,7 @@ RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, 
     end
 
     it "must not update 'updated_at' without 'touch' option" do
-      article = article_class.create!
+      article = article_class.create!(created_at: 1.minute.ago, updated_at: 1.minute.ago)
       previous_updated_at = article.reload.updated_at
 
       article_class.update_counters(article.id, comments_count: 1)
@@ -49,7 +49,7 @@ RSpec.shared_examples "ActiveRecord::CounterCache interface" do |article_class, 
 
     it "must update 'updated_at' with 'touch' option" do
       article = article_class.create!(created_at: 1.minute.ago, updated_at: 1.minute.ago)
-      previous_updated_at = article.updated_at
+      previous_updated_at = article.reload.updated_at
 
       article_class.update_counters(article.id, comments_count: 1, touch: true)
 

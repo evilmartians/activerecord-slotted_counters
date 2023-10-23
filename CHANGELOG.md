@@ -2,6 +2,8 @@
 
 ## master
 
+- Add Mysql support [#18](https://github.com/evilmartians/activerecord-slotted_counters/pull/18) ([@prog-supdex][])
+
 - Add SQLite support [#17](https://github.com/evilmartians/activerecord-slotted_counters/pull/17) ([@prog-supdex][])
 
 ## 0.1.4 (2023-04-19)
