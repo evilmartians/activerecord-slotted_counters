@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.0"]
+        ruby: ["3.2"]
         gemfile: ["gemfiles/rails7.gemfile"]
         db: ["postgres"]
         include:
@@ -37,16 +37,16 @@ jobs:
         - ruby: "3.0"
           gemfile: "gemfiles/rails7.gemfile"
           db: "mysql"
-        - ruby: "3.1"
+        - ruby: "3.2"
           gemfile: "gemfiles/railsmaster.gemfile"
           db: "mysql"
         - ruby: "2.7"
           gemfile: "gemfiles/rails6.gemfile"
           db: "sqlite"
-        - ruby: "3.0"
+        - ruby: "3.1"
           gemfile: "gemfiles/rails7.gemfile"
           db: "sqlite"
-        - ruby: "3.1"
+        - ruby: "3.2"
           gemfile: "gemfiles/railsmaster.gemfile"
           db: "sqlite"
     services:
