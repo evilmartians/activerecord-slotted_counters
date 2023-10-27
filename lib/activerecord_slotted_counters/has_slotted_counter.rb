@@ -4,7 +4,8 @@ require "active_support"
 require "activerecord_slotted_counters/utils"
 
 require "activerecord_slotted_counters/adapters/rails_upsert"
-require "activerecord_slotted_counters/adapters/pg_sqlite_upsert"
+require "activerecord_slotted_counters/adapters/pg_upsert"
+require "activerecord_slotted_counters/adapters/sqlite_upsert"
 
 module ActiveRecordSlottedCounters
   class SlottedCounter < ::ActiveRecord::Base
@@ -41,15 +42,18 @@ module ActiveRecordSlottedCounters
 
       def set_slotted_counter_db_adapter
         available_adapters = [
-          ActiveRecordSlottedCounters::Adapters::RailsUpsert,
-          ActiveRecordSlottedCounters::Adapters::PgSqliteUpsert
+          ActiveRecordSlottedCounters::Adapters::SqliteUpsert,
+          ActiveRecordSlottedCounters::Adapters::PgUpsert,
+          ActiveRecordSlottedCounters::Adapters::RailsUpsert
         ]
+
+        current_adapter_name = connection.adapter_name
 
         adapter = available_adapters
           .map { |adapter| adapter.new(self) }
-          .detect { |adapter| adapter.apply? }
+          .detect { |adapter| adapter.apply?(current_adapter_name) }
 
-        raise NotSupportedAdapter.new(connection.adapter_name) if adapter.nil?
+        raise NotSupportedAdapter.new(current_adapter_name) if adapter.nil?
 
         adapter
       end
