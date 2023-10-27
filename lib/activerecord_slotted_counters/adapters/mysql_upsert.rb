@@ -3,20 +3,19 @@
 module ActiveRecordSlottedCounters
   module Adapters
     class MysqlUpsert
-      attr_reader :klass, :current_adapter_name
+      attr_reader :klass
 
-      def initialize(klass, current_adapter_name)
+      def initialize(klass)
         @klass = klass
-        @current_adapter_name = current_adapter_name
       end
 
-      def apply?
+      def apply?(current_adapter_name)
         return false unless defined?(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
 
         current_adapter_name == ActiveRecord::ConnectionAdapters::Mysql2Adapter::ADAPTER_NAME
       end
 
-      def bulk_insert(attributes, on_duplicate: nil, unique_by: nil)
+      def bulk_insert(attributes, on_duplicate: nil, **)
         raise ArgumentError, "Values must not be empty" if attributes.empty?
 
         keys = attributes.first.keys + klass.all_timestamp_attributes_in_model
@@ -58,6 +57,7 @@ module ActiveRecordSlottedCounters
       def quote_column_names(columns, table_name: false)
         columns.map do |column|
           column_name = klass.connection.quote_column_name(column.name)
+
           if table_name
             "#{klass.quoted_table_name}.#{column_name}"
           else
@@ -71,6 +71,7 @@ module ActiveRecordSlottedCounters
           type = klass.connection.lookup_cast_type_from_column(columns[i])
           klass.connection.quote(type.serialize(value))
         end.join(",")
+
         "(#{values_str})"
       end
 
