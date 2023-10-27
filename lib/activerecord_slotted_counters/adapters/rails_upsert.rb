@@ -3,13 +3,13 @@
 module ActiveRecordSlottedCounters
   module Adapters
     class RailsUpsert
-      attr_reader :klass, :current_adapter_name
+      attr_reader :klass
 
       def initialize(klass)
         @klass = klass
       end
 
-      def apply?
+      def apply?(_)
         ActiveRecord::VERSION::MAJOR >= 7
       end
 
