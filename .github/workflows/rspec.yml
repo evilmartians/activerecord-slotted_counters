@@ -23,7 +23,7 @@ jobs:
       matrix:
         ruby: ["3.0"]
         gemfile: ["gemfiles/rails7.gemfile"]
-        db: ["mysql"]
+        db: ["postgres"]
         include:
         - ruby: "2.7"
           gemfile: "gemfiles/rails6.gemfile"
@@ -31,11 +31,11 @@ jobs:
         - ruby: "3.1"
           gemfile: "gemfiles/railsmaster.gemfile"
           db: "postgres"
-        - ruby: "3.0"
-          gemfile: "gemfiles/rails7.gemfile"
-          db: "postgres"
         - ruby: "2.7"
           gemfile: "gemfiles/rails6.gemfile"
+          db: "mysql"
+        - ruby: "3.0"
+          gemfile: "gemfiles/rails7.gemfile"
           db: "mysql"
         - ruby: "3.1"
           gemfile: "gemfiles/railsmaster.gemfile"
@@ -43,11 +43,11 @@ jobs:
         - ruby: "2.7"
           gemfile: "gemfiles/rails6.gemfile"
           db: "sqlite"
-        - ruby: "3.1"
-          gemfile: "gemfiles/railsmaster.gemfile"
-          db: "sqlite"
         - ruby: "3.0"
           gemfile: "gemfiles/rails7.gemfile"
+          db: "sqlite"
+        - ruby: "3.1"
+          gemfile: "gemfiles/railsmaster.gemfile"
           db: "sqlite"
     services:
       postgres:
