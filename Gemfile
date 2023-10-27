@@ -14,4 +14,5 @@ if File.exist?(local_gemfile)
   eval(File.read(local_gemfile)) # rubocop:disable Security/Eval
 else
   gem "rails", "~> 7.0"
+  gem "sqlite3", "~> 1.4.2"
 end

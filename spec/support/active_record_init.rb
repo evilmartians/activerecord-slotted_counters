@@ -19,7 +19,7 @@ DB_CONFIG =
       {"database" => ENV.fetch("DB_NAME", "slotted_counters_test")}
     )
     config.respond_to?(:configuration_hash) ? config.configuration_hash : config.config
-  elsif ENV["DB"] == "sqlite"
+  else
     # Make sure we don't have a DATABASE_URL set (it can be used by libs, e.g., database_cleaner)
     ENV.delete("DATABASE_URL") if ENV["DATABASE_URL"]
 
