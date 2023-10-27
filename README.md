@@ -22,9 +22,10 @@ Add to your project:
 gem "activerecord-slotted_counters"
 ```
 
-### Supported Ruby versions
+### Requirements
 
-- Ruby (MRI) >= 2.7.0
+- Ruby >= 2.7.0
+- Rails 6+
 
 ## Usage
 
@@ -76,10 +77,6 @@ end
 ```
 
 Using `counter_cache: true` on `belongs_to` associations also works as expected.
-
-## Limitations / TODO
-
-- Gem supports only PostgreSQL, SQLite3 and MySQL for Rails 6
 
 ## Contributing
 
