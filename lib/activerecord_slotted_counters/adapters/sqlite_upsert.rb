@@ -49,7 +49,11 @@ module ActiveRecordSlottedCounters
 
         sql += " RETURNING \"id\""
 
-        klass.connection.exec_query(sql)
+        klass.connection.exec_query(sql).rows.count
+      end
+
+      def wrap_column_name(value)
+        "EXCLUDED.#{value}"
       end
 
       private
