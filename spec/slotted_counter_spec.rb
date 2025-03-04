@@ -144,4 +144,21 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
 
     insert_manager.to_sql
   end
+
+  it "uses unscoped Active Record lookups when touch:true is used" do
+    article = WithSlottedCounter::DefaultScope.create!
+    expect(article.published).to be true
+    sql_output = []
+
+    ActiveSupport::Notifications.subscribe("sql.active_record") do |_, _, _, _, details|
+      sql_output << details[:sql]
+    end
+
+    WithSlottedCounter::DefaultScope.update_counters(article.id, comments_count: 1, touch: true)
+
+    ActiveSupport::Notifications.unsubscribe("sql.active_record")
+    expect(sql_output.any? { |sql| sql.include?("published = true") }).to be_falsey
+  end
+
+
 end
