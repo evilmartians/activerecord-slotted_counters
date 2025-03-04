@@ -224,7 +224,7 @@ module ActiveRecordSlottedCounters
       end
 
       def touch_attributes(ids, touch)
-        scope = where(id: ids)
+        scope = unscoped.where(id: ids)
         return scope.touch_all if touch == true
 
         scope.touch_all(touch)
