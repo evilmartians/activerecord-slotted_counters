@@ -7,11 +7,11 @@ module ActiveRecordSlottedCounters
     private
 
     def slotted_counter_association_name(counter_type)
-      "#{counter_type}_slotted_counters".to_sym
+      :"#{counter_type}_slotted_counters"
     end
 
     def slotted_counter_name(counter_type)
-      "#{counter_type}_count".to_sym
+      :"#{counter_type}_count"
     end
 
     # TODO refactoring

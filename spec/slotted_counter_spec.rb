@@ -159,6 +159,4 @@ RSpec.describe "ActiveRecord::SlottedCounterCache", :db do
     ActiveSupport::Notifications.unsubscribe("sql.active_record")
     expect(sql_output.any? { |sql| sql.include?("published = true") }).to be_falsey
   end
-
-
 end

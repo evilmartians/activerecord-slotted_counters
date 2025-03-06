@@ -3,10 +3,11 @@
 module ActiveRecordSlottedCounters
   module Adapters
     class RailsUpsert
-      attr_reader :klass
+      attr_reader :klass, :supports_insert_conflict_target
 
-      def initialize(klass)
+      def initialize(klass, supports_insert_conflict_target: false)
         @klass = klass
+        @supports_insert_conflict_target = supports_insert_conflict_target
       end
 
       def apply?(_)
@@ -14,11 +15,22 @@ module ActiveRecordSlottedCounters
       end
 
       def bulk_insert(attributes, on_duplicate: nil, unique_by: nil)
-        klass.upsert_all(attributes, on_duplicate: on_duplicate, unique_by: unique_by).rows.count
+        opts = {on_duplicate: on_duplicate, unique_by: unique_by}
+        opts.delete(:unique_by) unless supports_insert_conflict_target
+
+        klass.with_connection do |c|
+          # We have to manually call #update here to return the number of affected rows
+          c.update(ActiveRecord::InsertAll.new(klass.all, c, attributes, **opts).send(:to_sql))
+        end
       end
 
       def wrap_column_name(value)
-        "EXCLUDED.#{value}"
+        # This is mysql
+        if !supports_insert_conflict_target
+          "VALUES(#{value})"
+        else
+          "EXCLUDED.#{value}"
+        end
       end
     end
   end

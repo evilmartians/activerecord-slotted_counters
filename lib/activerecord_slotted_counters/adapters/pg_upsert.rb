@@ -5,7 +5,7 @@ module ActiveRecordSlottedCounters
     class PgUpsert
       attr_reader :klass
 
-      def initialize(klass)
+      def initialize(klass, **)
         @klass = klass
       end
 
