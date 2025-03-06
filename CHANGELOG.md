@@ -2,6 +2,10 @@
 
 ## master
 
+## 0.3.0 (2025-03-05)
+
+- Rails 8 support. ([@palkan][])
+
 ## 0.2.0 (2023-10-27)
 
 - Add Mysql support [#18](https://github.com/evilmartians/activerecord-slotted_counters/pull/18) ([@prog-supdex][])
