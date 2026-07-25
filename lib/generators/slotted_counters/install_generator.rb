@@ -7,6 +7,7 @@ module SlottedCounters
   module Generators
     class InstallGenerator < Rails::Generators::Base
       include ActiveRecord::Generators::Migration
+
       source_root File.join(__dir__, "templates")
 
       def copy_migration
